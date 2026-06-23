@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  /* Generated Light Theme (Socratic Paper) */
+  --color-surface: #fbfdfa;
+  --color-surface-dim: #dbdedb;
+  --color-surface-bright: #fbfdfa;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f5f7f4;
+  --color-surface-container: #eff1ee;
+  --color-surface-container-high: #e9ebe8;
+  --color-surface-container-highest: #e3e5e2;
+  --color-on-surface: #191c1b;
+  --color-on-surface-variant: #404945;
+  --color-inverse-surface: #2e3130;
+  --color-inverse-on-surface: #eff1ee;
+  --color-outline: #707975;
+  --color-outline-variant: #bfc9c4;
+  --color-primary: #165042;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #b5eedc;
+  --color-on-primary-container: #002019;
+  --color-secondary: #4d635b;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d0e8de;
+  --color-on-secondary-container: #0a1f19;
+  --color-tertiary: #7d463b;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #ffdad3;
+  --color-on-tertiary-container: #350f07;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #410002;
+  --color-background: #fbfdfa;
+  --color-on-background: #191c1b;
+
+  --shadow-scholarly: 0px 12px 32px rgba(22, 80, 66, 0.12); /* Light theme glow */
+}
+
+.dark {
+  /* Academic Curator Dark Theme (Midnight Study) */
+  --color-surface: #111413;
+  --color-surface-dim: #111413;
+  --color-surface-bright: #373a38;
+  --color-surface-container-lowest: #0c0f0e;
+  --color-surface-container-low: #191c1b;
+  --color-surface-container: #1d201f;
+  --color-surface-container-high: #272b29;
+  --color-surface-container-highest: #323534;
+  --color-on-surface: #e1e3e0;
+  --color-on-surface-variant: #bfc9c4;
+  --color-inverse-surface: #e1e3e0;
+  --color-inverse-on-surface: #2e3130;
+  --color-outline: #8a938f;
+  --color-outline-variant: #404945;
+  --color-primary: #9ad2c0;
+  --color-on-primary: #00382d;
+  --color-primary-container: #074639;
+  --color-on-primary-container: #7cb3a3;
+  --color-secondary: #b4ccc2;
+  --color-on-secondary: #20342e;
+  --color-secondary-container: #364b44;
+  --color-on-secondary-container: #a3bab1;
+  --color-tertiary: #fdb5a6;
+  --color-on-tertiary: #50231a;
+  --color-tertiary-container: #603026;
+  --color-on-tertiary-container: #dc988a;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+  --color-background: #111413;
+  --color-on-background: #e1e3e0;
+
+  --shadow-scholarly: 0px 12px 32px rgba(154, 210, 192, 0.12);
+}
+
+@theme {
+  /* Fonts */
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+
+  /* Colors mapped to CSS Variables */
+  --color-surface: var(--color-surface);
+  --color-surface-dim: var(--color-surface-dim);
+  --color-surface-bright: var(--color-surface-bright);
+  --color-surface-container-lowest: var(--color-surface-container-lowest);
+  --color-surface-container-low: var(--color-surface-container-low);
+  --color-surface-container: var(--color-surface-container);
+  --color-surface-container-high: var(--color-surface-container-high);
+  --color-surface-container-highest: var(--color-surface-container-highest);
+  --color-on-surface: var(--color-on-surface);
+  --color-on-surface-variant: var(--color-on-surface-variant);
+  --color-inverse-surface: var(--color-inverse-surface);
+  --color-inverse-on-surface: var(--color-inverse-on-surface);
+  --color-outline: var(--color-outline);
+  --color-outline-variant: var(--color-outline-variant);
+  --color-primary: var(--color-primary);
+  --color-on-primary: var(--color-on-primary);
+  --color-primary-container: var(--color-primary-container);
+  --color-on-primary-container: var(--color-on-primary-container);
+  --color-secondary: var(--color-secondary);
+  --color-on-secondary: var(--color-on-secondary);
+  --color-secondary-container: var(--color-secondary-container);
+  --color-on-secondary-container: var(--color-on-secondary-container);
+  --color-tertiary: var(--color-tertiary);
+  --color-on-tertiary: var(--color-on-tertiary);
+  --color-tertiary-container: var(--color-tertiary-container);
+  --color-on-tertiary-container: var(--color-on-tertiary-container);
+  --color-error: var(--color-error);
+  --color-on-error: var(--color-on-error);
+  --color-error-container: var(--color-error-container);
+  --color-on-error-container: var(--color-on-error-container);
+  --color-background: var(--color-background);
+  --color-on-background: var(--color-on-background);
+
+  /* Radius mapping based on spec */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+}
+
+@utility scholarly-shadow {
+  box-shadow: var(--shadow-scholarly);
+}
+
+@utility glass {
+  /* Background of surface_container_high at 60% opacity with 20px blur */
+  background-color: color-mix(in srgb, var(--color-surface-container-high) 60%, transparent);
+  backdrop-filter: blur(20px);
+}
+
+@utility ghost-border {
+  /* Ghost Border: outline-variant at 30% opacity */
+  border: 1px solid color-mix(in srgb, var(--color-outline-variant) 30%, transparent);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-sans transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold text-on-surface;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-on-primary px-6 py-2.5 rounded-md font-medium transition-all hover:bg-primary-container hover:text-on-primary-container active:scale-95 scholarly-shadow;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary text-on-secondary px-6 py-2.5 rounded-md font-medium transition-all hover:bg-secondary-container hover:text-on-secondary-container active:scale-95 scholarly-shadow;
+  }
+
+  .input-field {
+    @apply bg-surface-container-highest ghost-border px-4 py-2.5 rounded-md focus:outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary-container transition-all text-on-surface placeholder:text-on-surface-variant;
+  }
+}
