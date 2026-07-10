@@ -1,27 +1,29 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth, type UserRole } from '../../context/AuthContext';
+import { ReactNode } from 'react';
+import { Navigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import type { Role } from '../../types/auth';
 
 interface ProtectedRouteProps {
-  children: React.ReactNode;
-  allowedRoles?: UserRole[];
+  children: ReactNode;
+  allowedRoles?: Role[];
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
-  const { user, isAuthenticated } = useAuth();
-  const location = useLocation();
+export default function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
+  const { isAuthenticated, isLoading, user } = useAuth();
 
-  if (!isAuthenticated) {
-    // Redirect to login but save the current location to return to
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (isLoading) {
+    // Avoid a flash-redirect to /login while we're still checking localStorage
+    return <div className="p-10 text-center">Loading...</div>;
   }
 
-  if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    // Role not allowed, redirect to home or unauthorized page
-    return <Navigate to="/" replace />;
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    // Logged in, but wrong role for this route -> send them to their own dashboard
+    return <Navigate to={`/dashboard/${user.role}`} replace />;
   }
 
   return <>{children}</>;
-};
-
-export default ProtectedRoute;
+}

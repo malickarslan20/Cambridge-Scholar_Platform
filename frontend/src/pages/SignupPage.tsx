@@ -1,70 +1,116 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import AuthLayout from '../layouts/AuthLayout';
-import { Mail, Lock, User, ArrowRight, GraduationCap } from 'lucide-react';
+import { useState, FormEvent } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import type { Role } from '../types/auth';
 
-const SignupPage: React.FC = () => {
+export default function SignupPage() {
+  const { signup, error, clearError } = useAuth();
+  const navigate = useNavigate();
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [role, setRole] = useState<Role>('student');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    clearError();
+    setIsSubmitting(true);
+    try {
+      const user = await signup({ name, email, password, role });
+      navigate(`/dashboard/${user.role}`);
+    } catch {
+      // error is already set in context
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <AuthLayout 
-      title="Request Enrollment" 
-      subtitle="Join our next cohort of global scholars."
-    >
-      <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold text-on-surface/70 mb-2 uppercase tracking-wider text-[10px]">First Name</label>
-            <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface/30" size={16} />
-              <input type="text" placeholder="John" className="w-full input-field pl-10 py-2 text-sm" />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-on-surface/70 mb-2 uppercase tracking-wider text-[10px]">Last Name</label>
-            <input type="text" placeholder="Doe" className="w-full input-field py-2 text-sm" />
-          </div>
+    <div className="max-w-md mx-auto mt-16 p-8 bg-surface-container-low rounded-lg scholarly-shadow">
+      <h1 className="text-2xl mb-6">Create Account</h1>
+
+      {error && (
+        <div className="mb-4 p-3 rounded-md bg-error-container text-on-error-container text-sm">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div>
+          <label htmlFor="name" className="block mb-1 text-sm font-medium">
+            Full Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            required
+            className="input-field w-full"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoComplete="name"
+          />
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-on-surface/70 mb-2 uppercase tracking-wider text-[10px]">Email Address</label>
-          <div className="relative">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface/30" size={18} />
-            <input type="email" placeholder="scholar@cambridge.edu" className="w-full input-field pl-11 py-2 text-sm" />
-          </div>
+          <label htmlFor="email" className="block mb-1 text-sm font-medium">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            className="input-field w-full"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+          />
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-on-surface/70 mb-2 uppercase tracking-wider text-[10px]">Select Role</label>
-          <div className="relative">
-            <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface/30" size={18} />
-            <select className="w-full input-field pl-11 py-2 text-sm appearance-none bg-surface-container-highest">
-              <option>Student</option>
-              <option>Teacher</option>
-              <option>Parent</option>
-            </select>
-          </div>
+          <label htmlFor="password" className="block mb-1 text-sm font-medium">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            required
+            minLength={6}
+            className="input-field w-full"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            autoComplete="new-password"
+          />
         </div>
 
         <div>
-          <label className="block text-sm font-bold text-on-surface/70 mb-2 uppercase tracking-wider text-[10px]">Create Password</label>
-          <div className="relative">
-            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface/30" size={18} />
-            <input type="password" placeholder="••••••••" className="w-full input-field pl-11 py-2 text-sm" />
-          </div>
+          <label htmlFor="role" className="block mb-1 text-sm font-medium">
+            I am a...
+          </label>
+          <select
+            id="role"
+            className="input-field w-full"
+            value={role}
+            onChange={(e) => setRole(e.target.value as Role)}
+          >
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+            <option value="parent">Parent</option>
+          </select>
         </div>
 
-        <button className="w-full btn-primary flex items-center justify-center gap-2 py-3 mt-4">
-          Submit Application <ArrowRight size={18} />
+        <button type="submit" disabled={isSubmitting} className="btn-primary mt-2 disabled:opacity-60">
+          {isSubmitting ? 'Creating account...' : 'Sign Up'}
         </button>
-
-        <div className="text-center pt-2">
-          <p className="text-on-surface/60 text-sm">
-            Already have an account?{' '}
-            <Link to="/login" className="text-primary font-bold hover:underline">Sign In</Link>
-          </p>
-        </div>
       </form>
-    </AuthLayout>
-  );
-};
 
-export default SignupPage;
+      <p className="mt-6 text-sm text-on-surface-variant">
+        Already have an account?{' '}
+        <Link to="/login" className="text-primary font-medium">
+          Log in
+        </Link>
+      </p>
+    </div>
+  );
+}

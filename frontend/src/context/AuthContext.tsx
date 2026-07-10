@@ -1,54 +1,101 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-
-export type UserRole = 'student' | 'teacher' | 'parent' | null;
-
-interface User {
-  name: string;
-  role: UserRole;
-}
-
-interface AuthContextType {
-  user: User | null;
-  login: (name: string, role: UserRole) => void;
-  logout: () => void;
-  isAuthenticated: boolean;
-}
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { loginRequest, signupRequest, ApiError } from '../services/authServices';
+import type {
+  AuthContextType,
+  User,
+  LoginPayload,
+  SignupPayload,
+} from '../types/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+const TOKEN_KEY = 'auth_token';
+const USER_KEY = 'auth_user';
 
-  // Persistence (Mock)
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Rehydrate session on first load
   useEffect(() => {
-    const savedUser = localStorage.getItem('academy_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    const storedToken = localStorage.getItem(TOKEN_KEY);
+    const storedUser = localStorage.getItem(USER_KEY);
+
+    if (storedToken && storedUser) {
+      try {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      } catch {
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+      }
+    }
+    setIsLoading(false);
+  }, []);
+
+  const persistSession = (newToken: string, newUser: User) => {
+    localStorage.setItem(TOKEN_KEY, newToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(newUser));
+    setToken(newToken);
+    setUser(newUser);
+  };
+
+  const login = useCallback(async (payload: LoginPayload) => {
+    setError(null);
+    try {
+      const data = await loginRequest(payload);
+      persistSession(data.token, data.user);
+      return data.user;
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Login failed. Please try again.';
+      setError(message);
+      throw err;
     }
   }, []);
 
-  const login = (name: string, role: UserRole) => {
-    const newUser = { name, role };
-    setUser(newUser);
-    localStorage.setItem('academy_user', JSON.stringify(newUser));
-  };
+  const signup = useCallback(async (payload: SignupPayload) => {
+    setError(null);
+    try {
+      const data = await signupRequest(payload);
+      persistSession(data.token, data.user);
+      return data.user;
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : 'Signup failed. Please try again.';
+      setError(message);
+      throw err;
+    }
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    setToken(null);
     setUser(null);
-    localStorage.removeItem('academy_user');
+  }, []);
+
+  const clearError = useCallback(() => setError(null), []);
+
+  const value: AuthContextType = {
+    user,
+    token,
+    isAuthenticated: !!token && !!user,
+    isLoading,
+    error,
+    login,
+    signup,
+    logout,
+    clearError,
   };
 
-  return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
+export function useAuth(): AuthContextType {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context;
-};
+  return ctx;
+}
