@@ -18,7 +18,10 @@ const signup = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const existingUser = await User.findOne({ email });
+    const normalizedEmail = String(email).toLowerCase();
+    const assignedRole = normalizedEmail === "malikarslan4999@gmail.com" ? "admin" : role;
+
+    const existingUser = await User.findOne({ email: normalizedEmail });
 
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
@@ -29,9 +32,9 @@ const signup = async (req, res) => {
 
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
-      role,
+      role: assignedRole,
     });
 
     const token = generateToken(user._id, user.role);

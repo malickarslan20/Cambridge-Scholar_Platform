@@ -7,7 +7,7 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import StudentDashboard from './pages/StudentDashboard';
 import TeacherDashboard from './pages/TeacherDashboard';
-import ParentDashboard from './pages/ParentDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import CoursesPage from './pages/CoursesPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
@@ -48,10 +48,10 @@ function App() {
             }
           />
           <Route
-            path="/dashboard/parent"
+            path="/dashboard/admin"
             element={
-              <ProtectedRoute allowedRoles={['parent']}>
-                <ParentDashboard />
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />

@@ -16,7 +16,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) =>
       <div className="hidden md:flex md:w-1/2 bg-primary relative items-center justify-center p-12 overflow-hidden">
         <div className="relative z-10 text-white max-w-md">
           <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center transition-colors bg-primary">
-                    <img src="/images/logo.jpeg" alt="Cambridge Scholars Logo" className="w-full h-full object-cover" />
+                    <img src="/images/logo.jpeg" alt="Cambridge Academy Logo" className="w-full h-full object-cover" />
             
                 </div>
                 <motion.h2 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, Target, BookOpen, ArrowRight, Globe, X } from 'lucide-react';
+import { Award, Target, BookOpen, ArrowRight, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const AboutPage: React.FC = () => {

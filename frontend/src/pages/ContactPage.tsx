@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Phone, MapPin, Globe, ArrowRight, MessageSquare, X } from 'lucide-react';
+import { Phone, MapPin, Globe, ArrowRight, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ContactPage: React.FC = () => {

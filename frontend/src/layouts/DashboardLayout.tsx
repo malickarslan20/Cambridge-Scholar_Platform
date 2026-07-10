@@ -35,17 +35,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
   ];
 
+  const adminNavItem = user?.role === 'admin' ? { label: 'Admin Panel', icon: <Users size={20} />, path: '/dashboard/admin' } : null;
+  const visibleNavItems = adminNavItem ? [...navItems.slice(0, 2), adminNavItem, ...navItems.slice(2)] : navItems;
+
   return (
     <div className="min-h-screen bg-surface font-sans flex text-on-surface">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 bg-surface-container-low transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'} flex flex-col ghost-border border-y-0 border-l-0`}>
         <div className="p-6 flex items-center gap-4">
-          <Link to="/" className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl flex-shrink-0">C</Link>
+          <Link to="/" className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-primary">
+            <img src="/images/logo.jpeg" alt="Cambridge Academy Logo" className="w-full h-full object-cover" />
+          </Link>
           {isSidebarOpen && <span className="font-display font-bold text-xl tracking-tight">Cambridge</span>}
         </div>
 
         <nav className="flex-1 px-4 mt-8 space-y-2">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <Link 
               key={item.path}
               to={item.path}

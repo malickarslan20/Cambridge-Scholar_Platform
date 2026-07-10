@@ -1,4 +1,5 @@
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { Role } from '../types/auth';
@@ -96,8 +97,8 @@ export default function SignupPage() {
           >
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
-            <option value="parent">Parent</option>
           </select>
+          <p className="mt-2 text-xs text-on-surface-variant">Admin accounts are typically created manually by the platform owner.</p>
         </div>
 
         <button type="submit" disabled={isSubmitting} className="btn-primary mt-2 disabled:opacity-60">

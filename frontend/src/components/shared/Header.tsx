@@ -9,7 +9,7 @@ export const Header = ({ isMenuOpen, setIsMenuOpen }: { isMenuOpen: boolean, set
         <nav className="fixed top-0 w-full z-50 glass ghost-border border-x-0 border-t-0 py-4 px-6 md:px-12 flex justify-between items-center transition-colors duration-300">
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center transition-colors bg-primary">
-                    <img src="/images/logo.jpeg" alt="Cambridge Scholars Logo" className="w-full h-full object-cover" />
+                    <img src="/images/logo.jpeg" alt="Cambridge Academy Logo" className="w-full h-full object-cover" />
                 </div>
                 <span className="font-display font-bold text-xl tracking-tight text-on-surface hidden sm:block transition-colors">Cambridge Scholars</span>
             </div>

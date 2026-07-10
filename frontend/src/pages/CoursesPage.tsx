@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Search, Filter, BookOpen, Clock, Users, Star, ArrowRight, X } from 'lucide-react';
+import { Search, Filter, BookOpen, Clock, Users, Star, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const CoursesPage: React.FC = () => {
