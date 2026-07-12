@@ -79,7 +79,7 @@ const AboutPage: React.FC = () => {
               {...fadeInUp}
               className="aspect-square bg-surface-container-low rounded-3xl overflow-hidden scholarly-shadow mt-12"
             >
-              <img src="https://images.unsplash.com/photo-1523050338691-c1e53d076efd?auto=format&fit=crop&q=80&w=800" alt="Library" className="w-full h-full object-cover opacity-80" />
+              <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&q=80&w=800" alt="Library" className="w-full h-full object-cover opacity-80" />
             </motion.div>
             <motion.div 
               {...fadeInUp}
