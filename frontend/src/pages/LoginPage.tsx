@@ -1,27 +1,26 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { loginUser, clearError } from '../redux/slices/authSlice';
 
 export default function LoginPage() {
-  const { login, error, clearError } = useAuth();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { error, status } = useAppSelector((state) => state.auth);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const isSubmitting = status === 'loading';
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    clearError();
-    setIsSubmitting(true);
-    try {
-      const user = await login({ email, password });
-      navigate(`/dashboard/${user.role}`);
-    } catch {
-      // error is already set in context; nothing else to do here
-    } finally {
-      setIsSubmitting(false);
+    dispatch(clearError());
+    const result = await dispatch(loginUser({ email, password }));
+
+    if (loginUser.fulfilled.match(result)) {
+      navigate(`/dashboard/${result.payload.user.role}`);
     }
   };
 

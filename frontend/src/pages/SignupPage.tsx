@@ -1,30 +1,28 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import type { Role } from '../types/auth';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { signupUser, clearError, type UserRole } from '../redux/slices/authSlice';
 
 export default function SignupPage() {
-  const { signup, error, clearError } = useAuth();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { error, status } = useAppSelector((state) => state.auth);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<Role>('student');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [role, setRole] = useState<UserRole>('student');
+
+  const isSubmitting = status === 'loading';
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    clearError();
-    setIsSubmitting(true);
-    try {
-      const user = await signup({ name, email, password, role });
-      navigate(`/dashboard/${user.role}`);
-    } catch {
-      // error is already set in context
-    } finally {
-      setIsSubmitting(false);
+    dispatch(clearError());
+    const result = await dispatch(signupUser({ name, email, password, role }));
+
+    if (signupUser.fulfilled.match(result)) {
+      navigate(`/dashboard/${result.payload.user.role}`);
     }
   };
 
@@ -93,7 +91,7 @@ export default function SignupPage() {
             id="role"
             className="input-field w-full"
             value={role}
-            onChange={(e) => setRole(e.target.value as Role)}
+            onChange={(e) => setRole(e.target.value as UserRole)}
           >
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>

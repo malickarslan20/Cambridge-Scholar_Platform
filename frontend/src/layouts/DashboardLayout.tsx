@@ -11,7 +11,8 @@ import {
   UserCircle,
   X
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { logout } from '../redux/slices/authSlice';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -20,30 +21,46 @@ interface DashboardLayoutProps {
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.auth);
   const [isSidebarOpen] = React.useState(true);
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate('/login');
   };
 
-  const navItems = [
-    { label: 'Overview', icon: <LayoutDashboard size={20} />, path: `/dashboard/${user?.role}` },
-    { label: 'My Courses', icon: <BookOpen size={20} />, path: '/courses' },
-    { label: 'Community', icon: <Users size={20} />, path: '/community' },
-    { label: 'Settings', icon: <Settings size={20} />, path: '/settings' },
-  ];
+  const overviewPath = `/dashboard/${user?.role}`;
+  const myCoursesPath = user?.role === 'teacher' ? '/dashboard/teacher/courses' : user?.role === 'student' ? '/dashboard/student/courses' : '/dashboard';
+  const settingsPath = user?.role === 'teacher' ? '/dashboard/teacher/settings' : user?.role === 'student' ? '/dashboard/student/settings' : '/dashboard';
 
-  const adminNavItem = user?.role === 'admin' ? { label: 'Admin Panel', icon: <Users size={20} />, path: '/dashboard/admin' } : null;
-  const visibleNavItems = adminNavItem ? [...navItems.slice(0, 2), adminNavItem, ...navItems.slice(2)] : navItems;
+  const roleBasedItems =
+    user?.role === 'teacher'
+      ? [
+          { label: 'Overview', icon: <LayoutDashboard size={20} />, path: overviewPath },
+          { label: 'My Courses', icon: <BookOpen size={20} />, path: myCoursesPath },
+          { label: 'Community', icon: <Users size={20} />, path: `/dashboard/teacher/community` },
+          { label: 'Settings', icon: <Settings size={20} />, path: settingsPath },
+        ]
+      : user?.role === 'student'
+      ? [
+          { label: 'Overview', icon: <LayoutDashboard size={20} />, path: overviewPath },
+          { label: 'My Courses', icon: <BookOpen size={20} />, path: myCoursesPath },
+          { label: 'Settings', icon: <Settings size={20} />, path: settingsPath },
+        ]
+      : [];
+
+  const visibleNavItems =
+    user?.role === 'admin'
+      ? [{ label: 'Admin Panel', icon: <Users size={20} />, path: '/dashboard/admin' }]
+      : roleBasedItems;
 
   return (
     <div className="min-h-screen bg-surface font-sans flex text-on-surface">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 bg-surface-container-low transition-all duration-300 ${isSidebarOpen ? 'w-64' : 'w-20'} flex flex-col ghost-border border-y-0 border-l-0`}>
         <div className="p-6 flex items-center gap-4">
-          <Link to="/" className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-primary">
+          <Link to="/" className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center shrink-0 bg-primary">
             <img src="/images/logo.jpeg" alt="Cambridge Academy Logo" className="w-full h-full object-cover" />
           </Link>
           {isSidebarOpen && <span className="font-display font-bold text-xl tracking-tight">Cambridge</span>}
@@ -60,20 +77,20 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                   : 'text-on-surface/60 hover:bg-primary/10 hover:text-primary'
               }`}
             >
-              <span className="flex-shrink-0">{item.icon}</span>
+              <span className="shrink-0">{item.icon}</span>
               {isSidebarOpen && <span className="font-medium">{item.label}</span>}
             </Link>
           ))}
         </nav>
 
         <div className="p-4 mt-auto border-t border-white/5 space-y-1">
-          <Link 
+          {/* <Link 
             to="/" 
             className="flex items-center gap-4 px-4 py-3 text-on-surface/40 hover:text-primary transition-all w-full rounded-lg"
           >
             <X size={20} />
             {isSidebarOpen && <span className="font-medium">Exit to Home</span>}
-          </Link>
+          </Link> */}
           
           <button 
             onClick={handleLogout}
@@ -111,9 +128,15 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
                 <p className="font-bold text-sm leading-none">{user?.name}</p>
                 <p className="text-[10px] text-on-surface/50 uppercase tracking-widest mt-1">{user?.role}</p>
               </div>
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                <UserCircle size={28} />
-              </div>
+              {user?.avatar ? (
+                <div className="w-10 h-10 rounded-full overflow-hidden border border-on-surface/10">
+                  <img src={user.avatar} alt={`${user.name} avatar`} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <UserCircle size={28} />
+                </div>
+              )}
             </div>
           </div>
         </header>

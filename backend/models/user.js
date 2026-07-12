@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
     role: { type: String, enum: ["student", "teacher", "admin"], required: true },
+    mobile: { type: String, trim: true },
+    avatar: { type: String, trim: true },
   },
   { timestamps: true }
 );

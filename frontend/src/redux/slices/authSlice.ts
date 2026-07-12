@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -9,6 +10,8 @@ interface User {
   name: string;
   email: string;
   role: UserRole;
+  mobile?: string;
+  avatar?: string;
 }
 
 interface AuthState {
@@ -28,6 +31,10 @@ const initialState: AuthState = {
   status: 'idle',
   error: null,
 };
+
+const authHeader = (getState: () => RootState) => ({
+  Authorization: `Bearer ${getState().auth.token}`,
+});
 
 // --- Async thunks ---
 
@@ -70,6 +77,87 @@ export const signupUser = createAsyncThunk(
       return data; // { token, user }
     } catch {
       return rejectWithValue('Network error — please try again');
+    }
+  }
+);
+
+export const updateTeacherProfile = createAsyncThunk(
+  'auth/updateProfile',
+  async (
+    profile: { name?: string; mobile?: string; avatarFile?: File | null },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const formData = new FormData();
+      if (profile.name !== undefined) formData.append('name', profile.name);
+      if (profile.mobile !== undefined) formData.append('mobile', profile.mobile);
+      if (profile.avatarFile) formData.append('avatar', profile.avatarFile);
+
+      const res = await fetch(`${API_URL}/teacher/profile`, {
+        method: 'PUT',
+        headers: {
+          ...authHeader(getState as () => RootState),
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        return rejectWithValue(data.message || 'Failed to update profile');
+      }
+      return data;
+    } catch (err) {
+      return rejectWithValue(err instanceof Error ? err.message : 'Network error');
+    }
+  }
+);
+
+export const updateStudentProfile = createAsyncThunk(
+  'auth/updateStudentProfile',
+  async (
+    profile: { name?: string; mobile?: string; avatarFile?: File | null },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const formData = new FormData();
+      if (profile.name !== undefined) formData.append('name', profile.name);
+      if (profile.mobile !== undefined) formData.append('mobile', profile.mobile);
+      if (profile.avatarFile) formData.append('avatar', profile.avatarFile);
+
+      const res = await fetch(`${API_URL}/student/profile`, {
+        method: 'PUT',
+        headers: {
+          ...authHeader(getState as () => RootState),
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        return rejectWithValue(data.message || 'Failed to update profile');
+      }
+      return data;
+    } catch (err) {
+      return rejectWithValue(err instanceof Error ? err.message : 'Network error');
+    }
+  }
+);
+
+export const deleteTeacherProfile = createAsyncThunk(
+  'auth/deleteProfile',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const res = await fetch(`${API_URL}/teacher/profile`, {
+        method: 'DELETE',
+        headers: authHeader(getState as () => RootState),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        return rejectWithValue(data.message || 'Failed to delete profile');
+      }
+      return data;
+    } catch (err) {
+      return rejectWithValue(err instanceof Error ? err.message : 'Network error');
     }
   }
 );
@@ -123,6 +211,20 @@ const authSlice = createSlice({
       .addCase(signupUser.rejected, (state, action) => {
         state.status = 'failed';
         state.error = (action.payload as string) || 'Signup failed';
+      })
+      .addCase(updateTeacherProfile.fulfilled, (state, action: PayloadAction<{ user: User }>) => {
+        state.user = action.payload.user;
+        localStorage.setItem('academy_user', JSON.stringify(action.payload.user));
+      })
+      .addCase(updateStudentProfile.fulfilled, (state, action: PayloadAction<{ user: User }>) => {
+        state.user = action.payload.user;
+        localStorage.setItem('academy_user', JSON.stringify(action.payload.user));
+      })
+      .addCase(deleteTeacherProfile.fulfilled, (state) => {
+        state.user = null;
+        state.token = null;
+        localStorage.removeItem('academy_user');
+        localStorage.removeItem('academy_token');
       });
   },
 });
